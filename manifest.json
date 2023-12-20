@@ -2,6 +2,11 @@
   "name": "Presentator Export",
   "id":   "791989050714284849",
   "api":  "1.0.0",
-  "main": "dist/main.js",
-  "ui":   "dist/ui.html"
+  "main": "dist/figma/figma.iife.js",
+  "ui":   "dist/ui/index.html",
+  "networkAccess": {
+    "allowedDomains": ["*"],
+    "reasoning": "To allow making requests to your own self-hosted Presentator or to the public free service at app.presentator.io."
+  },
+  "editorType": ["figma"]
 }

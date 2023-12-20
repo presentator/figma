@@ -4,13 +4,14 @@ import types from '@/utils/types';
  * Generic app storage class.
  *
  * Example usage:
+ *
  * ```js
- * @import clientStorage from '@/utils/ClientStorage';
- * ...
- * var token = clientStorage.getItem('token');
+ * @import storage from '@/utils/storage';
+ *
+ * let token = storage.getItem('token');
  * ```
  */
-class ClientStorage {
+class Storage {
     /**
      * Initializes the storage.
      */
@@ -69,4 +70,4 @@ class ClientStorage {
     }
 }
 
-export default new ClientStorage();
+export default new Storage();

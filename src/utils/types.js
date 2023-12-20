@@ -1,4 +1,4 @@
-// list with plugin messages types:
+// list with plugin message types
 export default {
     MESSAGE_INIT_APP:              'init_app',
     MESSAGE_NOTIFY:                'notify',

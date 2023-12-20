@@ -1,0 +1,103 @@
+.project-item {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    width: 150px;
+    padding: 7px;
+    gap: 5px;
+    border-radius: var(--border-radius-med);
+    .thumb {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        width: 100%;
+        height: 82px;
+        overflow: hidden;
+        background: var(--silver);
+        border-radius: var(--border-radius-med);
+        text-align: center;
+        flex-direction: column;
+        &:has(img) {
+            justify-content: flex-start; // top-align images
+        }
+        img {
+            width: 100%;
+            height: auto;
+            margin: auto 0;
+            border: 0;
+        }
+        .button {
+            height: 27px;
+            padding: 0 15px;
+        }
+        .sign {
+            font-size: 2em;
+        }
+        .txt {
+            font-size: inherit;
+        }
+    }
+    .content {
+        font-size: 0.95em;
+        overflow-wrap: break-word;
+        .title {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            max-height: 35px;
+            line-height: 14px;
+        }
+    }
+    .content input {
+        margin: 0;
+    }
+
+    // states
+    &:hover,
+    &:focus-visible {
+        background: var(--selection-b);
+    }
+    &:active,
+    &.selected {
+        background: var(--blue3);
+    }
+
+    // new
+    &.new {
+        min-height: 117px;
+        .thumb {
+            height: 100%;
+            color: #fff;
+            margin: 0;
+            padding: 5px;
+            user-select: none;
+            background: var(--toolbar);
+        }
+        input {
+            height: 28px;
+        }
+        &.active {
+            background: none;
+            .thumb {
+                background: var(--selection-a);
+            }
+        }
+    }
+}
+
+.projects-list {
+    display: flex;
+    flex-wrap: wrap;
+    overflow-x: hidden;
+    overflow-y: auto;
+    width: auto;
+    row-gap: 10px;
+    .project-item {
+        flex-grow: 0;
+        flex-shrink: 1;
+        flex-basis: auto;
+        width: 25%;
+    }
+}
