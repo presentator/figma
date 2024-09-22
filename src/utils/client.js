@@ -518,7 +518,7 @@ class Client {
         if (data.featuredScreen?.medium) {
             result.featuredScreen = data.featuredScreen?.medium;
         } else {
-            const lastPrototype = data.expand?.["prototypes(project)"].filter((p) => p.expand?.["screens(prototype)"].length)
+            const lastPrototype = data.expand?.["prototypes(project)"]?.filter((p) => p.expand?.["screens(prototype)"]?.length)
                 ?.sort(function (a, b) {
                     if (a.created < b.created) {
                         return -1;

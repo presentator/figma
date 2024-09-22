@@ -32,17 +32,17 @@
     async function reset() {
         title = "";
 
-        // set the first frame dimensions as default
-        const frames = await plugin.getFrames();
-        if (frames.length) {
-            width = frames[0].width << 0;
+        // set the first node dimensions as default
+        const nodes = await plugin.getNodes();
+        if (nodes.length) {
+            width = nodes[0].width << 0;
 
-            // we first try to set the frame height from a default devices list
-            // because sometimes the designs are "longer" than the frame viewport
+            // we first try to set the node height from a default devices list
+            // because sometimes the designs are "longer" than the node viewport
             if (defaultSizes[width]) {
                 height = defaultSizes[width];
             } else {
-                height = frames[0].height << 0;
+                height = nodes[0].height << 0;
             }
         }
 

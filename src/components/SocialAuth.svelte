@@ -7,20 +7,21 @@
     let missingImages = {};
     let isAuthenticating = false;
 
-    async function authWithOAuth2(providerName) {
+    function oauth2(providerName) {
         if (isAuthenticating) {
             return;
         }
 
         isAuthenticating = true;
 
-        try {
-            await client.authWithOAuth2(providerName);
-
-            replace("/export");
-        } catch (err) {
-            client.error(err);
-        }
+        client
+            .authWithOAuth2(providerName)
+            .then(() => {
+                replace("/export");
+            })
+            .catch((err) => {
+                client.error(err);
+            });
 
         isAuthenticating = false;
     }
@@ -36,7 +37,7 @@
                 class="auth-provider"
                 class:disabled={isAuthenticating}
                 title={provider.displayName}
-                on:click={() => authWithOAuth2(provider.name)}
+                on:click={() => oauth2(provider.name)}
             >
                 {#if missingImages[provider.name]}
                     <span class="icon icon--key" />

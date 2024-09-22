@@ -71,13 +71,13 @@ class Plugin {
     }
 
     /**
-     * Returns design frame nodes.
+     * Returns design nodes.
      *
-     * @param  {Boolean} [onlySelected] Whether to return only the selected frames (`false` by default).
+     * @param  {Boolean} [onlySelected] Whether to return only the selected nodes (`false` by default).
      * @return {Promise}
      */
-    static getFrames(onlySelected = false) {
-        const state = ('get_frames_' + Date.now());
+    static getNodes(onlySelected = false) {
+        const state = ('get_nodes_' + Date.now());
 
         return new Promise(function(resolve, reject) {
             let forceTimeoutId = null;
@@ -87,7 +87,7 @@ class Plugin {
 
                 if (
                     message.state == state && // is the correct response
-                    message.type === types.MESSAGE_GET_FRAMES_RESPONSE
+                    message.type === types.MESSAGE_GET_NODES_RESPONSE
                 ) {
                     clearTimeout(forceTimeoutId);
 
@@ -106,11 +106,11 @@ class Plugin {
                 Promise.resolve([]);
             }, 10000);
 
-            // request frames
+            // request nodes
             parent.postMessage({
                 pluginMessage: {
                     state: state,
-                    type: types.MESSAGE_GET_FRAMES,
+                    type: types.MESSAGE_GET_NODES,
                     data: {
                         onlySelected: onlySelected,
                     },
@@ -120,14 +120,14 @@ class Plugin {
     }
 
     /**
-     * Exports a single frame image data.
+     * Exports a single node image data.
      *
-     * @param  {String} frameId    ID of the frame to export.
+     * @param  {String} nodeId     ID of the node to export.
      * @param  {Object} [settings] Additional settings to be passed to the export command.
      * @return {Promise}
      */
-    static exportFrame(frameId, settings) {
-        const state = ('export_frame_' + frameId + Date.now());
+    static exportNode(nodeId, settings) {
+        const state = ('export_node_' + nodeId + Date.now());
 
         return new Promise(function(resolve, reject) {
             let forceTimeoutId = null;
@@ -137,7 +137,7 @@ class Plugin {
 
                 if (
                     message.state == state && // is the correct response
-                    message.type === types.MESSAGE_EXPORT_FRAME_RESPONSE
+                    message.type === types.MESSAGE_EXPORT_NODE_RESPONSE
                 ) {
                     clearTimeout(forceTimeoutId);
 
@@ -155,13 +155,13 @@ class Plugin {
                 Promise.resolve([]);
             }, 10000);
 
-            // request frames
+            // request nodes
             parent.postMessage({
                 pluginMessage: {
                     state: state,
-                    type: types.MESSAGE_EXPORT_FRAME,
+                    type: types.MESSAGE_EXPORT_NODE,
                     data: {
-                        id: frameId,
+                        id: nodeId,
                         settings: settings,
                     },
                 },

@@ -28,7 +28,7 @@
         plugin.autoResizePluginDialog();
     }
 
-    async function exportFrames() {
+    async function exportNodes() {
         if (isExporting) {
             return;
         }
@@ -43,9 +43,9 @@
         successfullyExported = 0;
 
         try {
-            const frames = await plugin.getFrames(exportFilter === "selection");
-            if (!frames.length) {
-                throw new Error("No frames to export.");
+            const nodes = await plugin.getNodes(exportFilter === "selection");
+            if (!nodes.length) {
+                throw new Error("No nodes to export.");
             }
 
             // fetch all prototype screens to determine later whether to send create or update (replace) request
@@ -58,21 +58,21 @@
                 },
             };
 
-            for (let frame of frames) {
-                const frameData = await plugin.exportFrame(frame.id, exportSettings);
-                if (!frameData) {
+            for (let node of nodes) {
+                const nodeData = await plugin.exportNode(node.id, exportSettings);
+                if (!nodeData) {
                     continue;
                 }
 
-                const fileName = (frame.name + frame.id).toLowerCase().replace(/\W+/g, "_");
+                const fileName = ((node.name || "") + node.id).toLowerCase().replace(/\W+/g, "_");
 
                 const data = {
                     prototype: prototypeId,
-                    title: frame.name,
-                    file: new File([frameData], fileName + ".png", { type: "image/png" }),
+                    title: node.name,
+                    file: new File([nodeData], fileName + ".png", { type: "image/png" }),
                 };
 
-                // use an existing screen if its title matches with the frame name
+                // use an existing screen if its title matches with the node name
                 let existingScreenId = null;
                 for (let j = screens.length - 1; j >= 0; j--) {
                     if (screens[j].file.indexOf(fileName) >= 0) {
@@ -88,7 +88,7 @@
                 } catch {}
             }
 
-            if (successfullyExported != frames.length) {
+            if (successfullyExported != nodes.length) {
                 plugin.notify("Failed to export all of the selected screens.");
             }
         } catch (err) {
@@ -139,8 +139,8 @@
                 <div class="form-field m-b-0">
                     <label for="export_screens_select" class="section-title">Screens to export</label>
                     <select id="export_screens_select" class="screens-select" bind:value={exportFilter}>
-                        <option value="all">All screens</option>
-                        <option value="selection">Only the selected screen(s)</option>
+                        <option value="all">All screens (top-level page nodes)</option>
+                        <option value="selection">Only the selected nodes</option>
                     </select>
                 </div>
 
@@ -176,7 +176,7 @@
             <button
                 class="button button--primary"
                 disabled={!canExport}
-                on:click|preventDefault={exportFrames}
+                on:click|preventDefault={exportNodes}
             >
                 {isExporting ? "Exporting..." : "Export"}
             </button>

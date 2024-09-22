@@ -1,8 +1,8 @@
 import types from '@/utils/types';
 
-const storageKey            = 'presentator_storage';
-const defaultWidth          = 450;
-const defaultHeight         = 390;
+const storageKey    = 'presentator_storage';
+const defaultWidth  = 450;
+const defaultHeight = 390;
 const defaultExportSettings = {
     format: 'PNG',
     contentsOnly: true,
@@ -12,7 +12,7 @@ const defaultExportSettings = {
     },
 };
 
-// loads storage data and initializes the ui
+// Loads storage data and initializes the plugin UI.
 async function initUI() {
     let storageData;
     try {
@@ -29,48 +29,58 @@ async function initUI() {
     });
 }
 
-// returns visible frame nodes
-function getFrames(fromSelection = false) {
+// Returns serialized version of the visible nodes.
+//
+// If fromSelection is not set, it returns only top-level child nodes.
+function getSerializedNodes(fromSelection = false) {
     const result = [];
     const nodes  = (fromSelection ? figma.currentPage.selection : figma.currentPage.children) || [];
 
-    for (const node of nodes) {
-        if (node.type === 'FRAME' && node.visible) {
-            result.push({
-                node:   node,
-                id:     node.id,
-                name:   node.name,
-                width:  node.width,
-                height: node.height,
-            });
+    for (let i = nodes.length - 1; i >= 0; i--) {
+        if (!nodes[i].visible) {
+            continue;
         }
+
+        result.push({
+            // note: we don't assign directly the node object since
+            // since name, width, height, and other props are getters
+            // and we won't have access to them once sent over postMessage
+            id:     nodes[i].id,
+            name:   nodes[i].name,
+            width:  nodes[i].width,
+            height: nodes[i].height,
+        });
     }
 
     return result;
 }
 
-// returns single frame by its node id
-function getFrameById(id) {
-    const frames = getFrames();
+// Returns single node by its id.
+//
+// The node must be visible AND from a selection or a top level page child.
+function findNodeById(id) {
+    const nodes = figma.currentPage.selection.concat(figma.currentPage.children);
 
-    for (let i = frames.length - 1; i >= 0; i--) {
-        if (frames[i].id == id) {
-            return frames[i];
+    for (let i = nodes.length - 1; i >= 0; i--) {
+        if (nodes[i].id == id && nodes[i].visible) {
+            return nodes[i];
         }
     }
 
     return null;
 }
 
-// exports frame node data
-async function exportFrame(id, additionalSettings) {
+// Exports single node by its id.
+//
+// The node must be visible AND from a selection or a top level page child.
+async function exportNode(id, additionalSettings) {
     try {
-        const frame = getFrameById(id);
-        if (frame && frame.node) {
-            return await frame.node.exportAsync(Object.assign({}, defaultExportSettings, additionalSettings || {}));
+        const node = findNodeById(id);
+        if (node) {
+            return await node.exportAsync(Object.assign({}, defaultExportSettings, additionalSettings || {}));
         }
     } catch (e) {
-        console.log('Export frame error:', e);
+        console.log('Export node error:', e);
     }
 
     return null;
@@ -97,22 +107,20 @@ figma.ui.onmessage = async (message) => {
                 (message.data.width || defaultWidth) << 0,
                 (message.data.height || defaultHeight) << 0,
             );
-        case types.MESSAGE_GET_FRAMES:
-            let frames = getFrames(message.data.onlySelected);
-
+        case types.MESSAGE_GET_NODES:
             // send the result to the ui
             return figma.ui.postMessage({
                 state: message.state,
-                type:  types.MESSAGE_GET_FRAMES_RESPONSE,
-                data:  frames,
+                type:  types.MESSAGE_GET_NODES_RESPONSE,
+                data:  getSerializedNodes(message.data.onlySelected),
             });
-        case types.MESSAGE_EXPORT_FRAME:
-            let data = await exportFrame(message.data.id, message.data.settings);
+        case types.MESSAGE_EXPORT_NODE:
+            let data = await exportNode(message.data.id, message.data.settings);
 
             // send the result to the ui
             return figma.ui.postMessage({
                 state: message.state,
-                type:  types.MESSAGE_EXPORT_FRAME_RESPONSE,
+                type:  types.MESSAGE_EXPORT_NODE_RESPONSE,
                 data:  data,
             });
     }
