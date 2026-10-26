@@ -1,3 +1,7 @@
+**⚠️ The repo has moved to https://ganigeorgiev.com/presentator/figma.**
+
+---
+
 Presentator Figma plugin
 ======================================================================
 
